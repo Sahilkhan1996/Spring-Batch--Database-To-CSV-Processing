@@ -9,6 +9,7 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
@@ -51,7 +52,7 @@ public class BatchConfig {
         reader.setSql("select ID,DOB,SEMESTER,PERCENTAGE FROM EXAM_RESULT");
         //specify row mapper to convert each record of rs to model class object
         reader.setRowMapper((rs, rowNum) -> {
-            return new ExamResult(rs.getInt(1), rs.getDate(2), rs.getInt(4), rs.getDouble(3));
+            return new ExamResult(rs.getInt(1), rs.getDate(2), rs.getInt(3), rs.getDouble(4));
         });
 
 
@@ -62,7 +63,7 @@ public class BatchConfig {
     public FlatFileItemWriter<ExamResult> createWriter() {
         FlatFileItemWriter<ExamResult> writer = new FlatFileItemWriter<ExamResult>();
         //specify the location of destination
-        writer.setResource(new FileSystemResource("E:\\csv"));
+        writer.setResource(new FileSystemResource("E:\\csvs\\DBTOCSVFILE"));
         //create Field Extractor Obj
         BeanWrapperFieldExtractor<ExamResult> extractor = new BeanWrapperFieldExtractor<>();
         extractor.setNames(new String[]{"id", "dob", "semester", "percentage"});
@@ -82,8 +83,14 @@ public class BatchConfig {
                 .<ExamResult,ExamResult>chunk(100)
                 .reader(createReader())
                 .writer(createWriter())
-                //.processor(processor)
+                .processor(createProcessor())
                 .build();
+    }
+
+
+    @Bean
+    public ItemProcessor<ExamResult,ExamResult> createProcessor(){
+        return new ExamResultItemProcessor();
     }
 
     @Bean(name = "job1")

@@ -16,6 +16,13 @@ public class ExamResult {
     private Integer semester;
     private Double percentage;
 
-
-
+    @Override
+    public String toString() {
+        return "ExamResult{" +
+                "id=" + id +
+                ", dob=" + dob +
+                ", semester=" + semester +
+                ", percentage=" + percentage +
+                '}';
+    }
 }

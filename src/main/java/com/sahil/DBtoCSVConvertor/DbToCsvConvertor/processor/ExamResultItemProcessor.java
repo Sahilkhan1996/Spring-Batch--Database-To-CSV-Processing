@@ -9,8 +9,13 @@ public class ExamResultItemProcessor implements ItemProcessor<ExamResult, ExamRe
 
     @Override
     public ExamResult process(ExamResult item) throws Exception {
-        if (item.getPercentage() >= 90 / .0F) return item;
-        else return null;
+        System.out.println("Item ID::"+item.getId());
+        System.out.println("Item Obj"+item.toString());
+        if (item.getSemester()>=8) {
+            return item;
+        } else {
+            return null;
+        }
 
     }
 }
